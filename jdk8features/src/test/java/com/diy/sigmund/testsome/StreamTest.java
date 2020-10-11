@@ -8,10 +8,12 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -130,6 +132,10 @@ public class StreamTest {
          */
         // 过滤掉偶数，保留奇数集合
         IntStream.of(1, 2, 3, 4, 5).filter(number -> number % 2 != 0).forEach(System.out::println);
+
+        //集合拼接字符串
+        Set<String> setName= new HashSet<>();
+        String result= setName.stream().filter(str -> !str.isEmpty()).collect(Collectors.joining(","));
     }
     
     @Test
