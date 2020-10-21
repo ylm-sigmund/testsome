@@ -1,6 +1,7 @@
 # testsome
 
 #### Log
+- 2020-10-21 [concurrentprogramming]多线程状态 com.diy.sigmund.threadstatus
 - 2020-10-11 [jdk8features]上传lambda介绍 com.diy.sigmund.testsome.LambdaIntroduction
 - 2020-10-09 [jdk8features]上传aop实战,com.diy.sigmund.aspect.PersonAspect.testAround
 - [AOP使用注解实战](https://blog.csdn.net/yhl_jxy/article/details/78815636)
