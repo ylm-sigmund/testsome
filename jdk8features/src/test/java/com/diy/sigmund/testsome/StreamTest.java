@@ -38,7 +38,7 @@ public class StreamTest {
         stream.forEach(System.out::println);
         // 一个 Stream 只可以使用一次,下面的语句会报错
         // java.lang.IllegalStateException: stream has already been operated upon or closed
-        stream.forEach(a -> System.out.println(a));
+        // stream.forEach(a -> System.out.println(a));
     }
 
     /**
