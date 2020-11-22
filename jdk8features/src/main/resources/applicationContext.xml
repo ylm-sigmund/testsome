@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <!-- @Value -->
+    <!-- 将多个配置文件位置放到列表中 -->
+    <bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath*:redis.properties</value>
+            </list>
+        </property>
+    </bean>
+    <!-- 将配置文件读取到容器中，交给Spring管理 -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+        <property name="properties" ref="configProperties"/>
+    </bean>
+
+    <beans>
+        <!--定义包扫描路径-->
+        <context:component-scan base-package="com.diy.sigmund"/>
+        <!--与com.diy.sigmund.conifg.BeansConfig作用相同@Configuration，@Bean(initMethod = "initJedisCluster")-->
+<!--        <bean id="redisUtil" class="com.diy.sigmund.redis.RedisUtil" init-method="initJedisCluster">-->
+<!--            <constructor-arg ref="redisClusterConfig"/>-->
+<!--        </bean>-->
+    </beans>
+</beans>

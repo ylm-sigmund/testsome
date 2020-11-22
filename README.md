@@ -1,6 +1,8 @@
 # testsome
 
 #### Log
+- 2020-11-22 [jdk8features]SpringMVC集成Redis集群的应用，使用了log4j，@value，@Configuration，@Bean，jackson工具类
+> `com.diy.sigmund.redis`
 - 2020-11-08 [concurrentprogramming]多线程的基本原理 com.diy.sigmund.threadsynchronized
 - 2020-10-21 [concurrentprogramming]多线程状态 com.diy.sigmund.threadstatus
 - 2020-10-11 [jdk8features]上传lambda介绍 com.diy.sigmund.testsome.LambdaIntroduction
