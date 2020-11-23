@@ -10,6 +10,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
+ * json工具类，对jackson包的应用
+ * 
  * @author ylm-sigmund
  * @since 2020/11/21 13:16
  */

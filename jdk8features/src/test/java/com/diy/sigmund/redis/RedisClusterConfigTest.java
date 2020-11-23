@@ -37,6 +37,23 @@ public class RedisClusterConfigTest {
     @Autowired
     private RedisClusterConfig redisClusterConfig;
 
+    /**
+     * 测试执行lua脚本
+     */
+    @Test
+    public void testEval() {
+        String script1 = "return redis.call('set',KEYS[1],ARGV[1])";
+        String script2 = "return redis.call('get',KEYS[1])";
+        final List<String> list1 = Stream.of("e").collect(Collectors.toList());
+        final Object eval1 = RedisUtil.eval(script1, list1, list1);
+        LOGGER.info(Objects.requireNonNull(eval1).toString());
+        LOGGER.info(Objects.requireNonNull(RedisUtil.eval(script2, list1, list1)).toString());
+
+    }
+
+    /**
+     * redis集群常规测试
+     */
     @Test
     public void setex() {
         final User user = new User();
@@ -44,7 +61,7 @@ public class RedisClusterConfigTest {
         user.setName("jackson包");
         String key1 = "qqq";
         LOGGER.info("key1 是否存在 {}", RedisUtil.exists(key1));
-        final boolean setex = RedisUtil.setex(key1, user, 1, TimeUnit.MINUTES);
+        final boolean setex = RedisUtil.put(key1, user, 1, TimeUnit.MINUTES);
         LOGGER.info("setex key1 是否成功 {}", setex);
         LOGGER.info("key1 过期时间 {} 秒", RedisUtil.ttl(key1));
         final Long expire = RedisUtil.expire(key1, 1, TimeUnit.HOURS);
@@ -61,13 +78,13 @@ public class RedisClusterConfigTest {
     }
 
     /**
-     * 测试序列化和反序列化
+     * 测试序列化和反序列化，jackson的应用
      * 
      * @throws JsonProcessingException
      *             JsonProcessingException
      */
     @Test
-    public void testJackson() throws JsonProcessingException {
+    public void testJackson() {
         LOGGER.info("key1 是否存在 {}", RedisUtil.exists("key1"));
         // 对象
         final User user = new User();

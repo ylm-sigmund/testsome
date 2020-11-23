@@ -1,6 +1,7 @@
 package com.diy.sigmund.redis;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -16,17 +17,39 @@ import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPoolConfig;
 
 /**
+ * redis集群的工具类
+ * 
  * @author ylm-sigmund
  * @since 2020/11/20 20:43
  */
 @Component
 public class RedisUtil {
+    /**
+     * jedisCluster
+     */
     private static JedisCluster jedisCluster;
 
+    /**
+     * redisClusterConfig
+     */
     private RedisClusterConfig redisClusterConfig;
 
-    public RedisUtil(RedisClusterConfig redisClusterConfig) {
+    /**
+     * redisPoolConfig
+     */
+    private RedisPoolConfig redisPoolConfig;
+
+    /**
+     * RedisUtil注入属性
+     * 
+     * @param redisClusterConfig
+     *            redisClusterConfig
+     * @param redisPoolConfig
+     *            redisPoolConfig
+     */
+    public RedisUtil(RedisClusterConfig redisClusterConfig, RedisPoolConfig redisPoolConfig) {
         this.redisClusterConfig = redisClusterConfig;
+        this.redisPoolConfig = redisPoolConfig;
     }
 
     /**
@@ -35,13 +58,40 @@ public class RedisUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisUtil.class);
 
     /**
-     * 解析redis机器的ip+port
+     * 初始化 JedisCluster
+     */
+
+    private void initJedisCluster() {
+        LOGGER.info("redisClusterConfig is {}", redisClusterConfig.toString());
+        LOGGER.info("redisPoolConfig is {}", redisPoolConfig.toString());
+        Set<HostAndPort> node = getNode(redisClusterConfig.getNodes());
+        final String pwd = redisClusterConfig.getPwd();
+        JedisPoolConfig jedisPoolConfig = getJedisPoolConfig();
+        jedisCluster = new JedisCluster(node, 2000, 2000, 5, pwd, jedisPoolConfig);
+    }
+
+    /**
+     * 获取JedisPoolConfig
      * 
+     * @return JedisPoolConfig
+     */
+    private JedisPoolConfig getJedisPoolConfig() {
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+        jedisPoolConfig.setMaxTotal(redisPoolConfig.getMaxTotal());
+        jedisPoolConfig.setMaxIdle(redisPoolConfig.getMaxIdle());
+        jedisPoolConfig.setMinIdle(redisPoolConfig.getMinIdle());
+        jedisPoolConfig.setMaxWaitMillis(redisPoolConfig.getMaxWaitMillis());
+        return jedisPoolConfig;
+    }
+
+    /**
+     * 解析redis机器的ip+port
+     *
      * @param nodes
      *            nodes
      * @return node
      */
-    private Set<HostAndPort> parseHostAndPort(String nodes) {
+    private Set<HostAndPort> getNode(String nodes) {
         Set<HostAndPort> node = new HashSet<>();
         String[] hostAndPorts = nodes.split(",");
         for (String hostAndPort : hostAndPorts) {
@@ -51,17 +101,6 @@ public class RedisUtil {
             node.add(hap);
         }
         return node;
-    }
-
-    /**
-     * 初始化 JedisCluster
-     */
-
-    private void initJedisCluster() {
-        Set<HostAndPort> node = parseHostAndPort(redisClusterConfig.getNodes());
-        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-        // 注意：这里超时时间不要太短，他会有超时重试机制。而且其他像httpclient、dubbo等RPC框架也要注意这点
-        jedisCluster = new JedisCluster(node, 1000, 1000, 1, redisClusterConfig.getPwd(), jedisPoolConfig);
     }
 
     /**
@@ -79,7 +118,7 @@ public class RedisUtil {
      *            时间单位 SECONDS(秒),MINUTES(分),HOURS(时),DAYS(天),
      * @return 成功true或者失败false
      */
-    public static boolean setex(String key, Object value, int timeout, TimeUnit timeUnit) {
+    public static boolean put(String key, Object value, int timeout, TimeUnit timeUnit) {
         try {
             int seconds = (int)timeUnit.toSeconds(timeout);
             jedisCluster.setex(key, seconds, JsonUtil.toJson(value));
@@ -178,6 +217,36 @@ public class RedisUtil {
             return jedisCluster.del(key);
         } catch (Exception e) {
             LOGGER.error("Redis del key {}", key);
+            return null;
+        }
+    }
+
+    /**
+     * 执行lua脚本
+     * 
+     * 例如：
+     * 
+     * 192.168.92.100:8001> eval "return redis.call('set',KEYS[1],ARGV[1])" 1 name sym
+     * 
+     * OK
+     * 
+     * 192.168.92.100:8001> eval "return redis.call('get',KEYS[1])" 1 name
+     * 
+     * "sym"
+     * 
+     * @param script
+     *            script
+     * @param keys
+     *            keys
+     * @param args
+     *            args
+     * @return Object
+     */
+    public static Object eval(String script, List<String> keys, List<String> args) {
+        try {
+            return jedisCluster.eval(script, keys, args);
+        } catch (Exception e) {
+            LOGGER.error("Redis eval script {} keys {} args {}", script, keys.toString(), args.toString());
             return null;
         }
     }
