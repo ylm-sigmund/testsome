@@ -41,8 +41,8 @@ public class JsonUtil {
         String jsonString = "";
         try {
             jsonString = OBJECT_MAPPER.writeValueAsString(value);
-        } catch (Exception e) {
-            LOGGER.error("toJson error, value is {}", value);
+        } catch (Exception exception) {
+            LOGGER.error("toJson error, value is {}, exception is {}", value, exception);
         }
         return jsonString;
     }
@@ -65,8 +65,8 @@ public class JsonUtil {
         try {
             final TypeReference<T> valueType = supplier.get();
             object = OBJECT_MAPPER.readValue(content, valueType);
-        } catch (Exception e) {
-            LOGGER.error("toObject error, content is {}", content);
+        } catch (Exception exception) {
+            LOGGER.error("toObject error, content is {}, exception is {}", content, exception);
         }
         return object;
     }

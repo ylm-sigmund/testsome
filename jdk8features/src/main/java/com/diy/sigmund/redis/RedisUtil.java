@@ -123,8 +123,9 @@ public class RedisUtil {
             int seconds = (int)timeUnit.toSeconds(timeout);
             jedisCluster.setex(key, seconds, JsonUtil.toJson(value));
             return true;
-        } catch (Exception e) {
-            LOGGER.error("Redis setex key {} value {} timeout {} timeUnit {}", key, value, timeout, timeUnit);
+        } catch (Exception exception) {
+            LOGGER.error("Redis setex key {} value {} timeout {} timeUnit {}, exception is {}", key, value, timeout,
+                timeUnit, exception);
             return false;
         }
     }
@@ -146,8 +147,8 @@ public class RedisUtil {
         try {
             final String json = jedisCluster.get(key);
             return JsonUtil.toObject(json, supplier);
-        } catch (Exception e) {
-            LOGGER.error("Redis get key {}", key);
+        } catch (Exception exception) {
+            LOGGER.error("Redis get key {}, exception is {}", key, exception);
             return null;
         }
     }
@@ -167,8 +168,8 @@ public class RedisUtil {
         try {
             int seconds = (int)timeUnit.toSeconds(timeout);
             return jedisCluster.expire(key, seconds);
-        } catch (Exception e) {
-            LOGGER.error("Redis expire key {}", key);
+        } catch (Exception exception) {
+            LOGGER.error("Redis expire key {}, exception is {}", key, exception);
             return null;
         }
     }
@@ -183,8 +184,8 @@ public class RedisUtil {
     public static Boolean exists(String key) {
         try {
             return jedisCluster.exists(key);
-        } catch (Exception e) {
-            LOGGER.error("Redis exists key {}", key);
+        } catch (Exception exception) {
+            LOGGER.error("Redis exists key {}, exception is {}", key, exception);
             return false;
         }
     }
@@ -199,8 +200,8 @@ public class RedisUtil {
     public static Long ttl(String key) {
         try {
             return jedisCluster.ttl(key);
-        } catch (Exception e) {
-            LOGGER.error("Redis ttl key {}", key);
+        } catch (Exception exception) {
+            LOGGER.error("Redis ttl key {}, exception is {}", key, exception);
             return null;
         }
     }
@@ -215,8 +216,8 @@ public class RedisUtil {
     public static Long del(String key) {
         try {
             return jedisCluster.del(key);
-        } catch (Exception e) {
-            LOGGER.error("Redis del key {}", key);
+        } catch (Exception exception) {
+            LOGGER.error("Redis del key {}, exception is {}", key, exception);
             return null;
         }
     }
@@ -245,8 +246,9 @@ public class RedisUtil {
     public static Object eval(String script, List<String> keys, List<String> args) {
         try {
             return jedisCluster.eval(script, keys, args);
-        } catch (Exception e) {
-            LOGGER.error("Redis eval script {} keys {} args {}", script, keys.toString(), args.toString());
+        } catch (Exception exception) {
+            LOGGER.error("Redis eval script {} keys {} args {}, exception is {}", script, keys.toString(),
+                args.toString(), exception);
             return null;
         }
     }
