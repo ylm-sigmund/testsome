@@ -1,6 +1,7 @@
 # testsome
 
 #### Log
+- 2020-11-25 [jdk8features]单元测试：jackson泛型使用示例；序列化时格式化，按一定格式反序列化
 - 2020-11-22 [jdk8features]SpringMVC集成Redis集群的应用，使用了log4j，@value，@Configuration，@Bean，jackson工具类
 > `com.diy.sigmund.redis`
 - 2020-11-08 [concurrentprogramming]多线程的基本原理 com.diy.sigmund.threadsynchronized

@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,11 +120,11 @@ public class RedisUtil {
     public static boolean put(String key, Object value, int timeout, TimeUnit timeUnit) {
         try {
             int seconds = (int)timeUnit.toSeconds(timeout);
-            jedisCluster.setex(key, seconds, JsonUtil.toJson(value));
+            jedisCluster.setex(key, seconds, JacksonUtil.toJson(value));
             return true;
         } catch (Exception exception) {
-            LOGGER.error("Redis setex key {} value {} timeout {} timeUnit {}, exception is {}", key, value, timeout,
-                timeUnit, exception);
+            LOGGER.error("Redis setex key is {}, value is {}, timeout is {}, timeUnit is {}, exception is {}", key,
+                value, timeout, timeUnit, exception);
             return false;
         }
     }
@@ -133,22 +132,22 @@ public class RedisUtil {
     /**
      * 返回与键 key 相关联的值（已将字符串处理为对象）。
      * 
-     * 例如：RedisUtil.get(key1, () -> new TypeReference<User>() {});
+     * 例如：RedisUtil.get(key1, new TypeReference<User>() {});
      *
      * @param key
      *            key
-     * @param supplier
-     *            supplier
+     * @param typeReference
+     *            typeReference
      * @param <T>
      *            <T>
      * @return return
      */
-    public static <T> T get(String key, Supplier<TypeReference<T>> supplier) {
+    public static <T> T get(String key, TypeReference<T> typeReference) {
         try {
             final String json = jedisCluster.get(key);
-            return JsonUtil.toObject(json, supplier);
+            return JacksonUtil.toObject(json, typeReference);
         } catch (Exception exception) {
-            LOGGER.error("Redis get key {}, exception is {}", key, exception);
+            LOGGER.error("Redis get key is {}, exception is {}", key, exception);
             return null;
         }
     }
@@ -169,7 +168,7 @@ public class RedisUtil {
             int seconds = (int)timeUnit.toSeconds(timeout);
             return jedisCluster.expire(key, seconds);
         } catch (Exception exception) {
-            LOGGER.error("Redis expire key {}, exception is {}", key, exception);
+            LOGGER.error("Redis expire key is {}, exception is {}", key, exception);
             return null;
         }
     }
@@ -185,7 +184,7 @@ public class RedisUtil {
         try {
             return jedisCluster.exists(key);
         } catch (Exception exception) {
-            LOGGER.error("Redis exists key {}, exception is {}", key, exception);
+            LOGGER.error("Redis exists key is {}, exception is {}", key, exception);
             return false;
         }
     }
@@ -201,7 +200,7 @@ public class RedisUtil {
         try {
             return jedisCluster.ttl(key);
         } catch (Exception exception) {
-            LOGGER.error("Redis ttl key {}, exception is {}", key, exception);
+            LOGGER.error("Redis ttl key is {}, exception is {}", key, exception);
             return null;
         }
     }
@@ -217,7 +216,7 @@ public class RedisUtil {
         try {
             return jedisCluster.del(key);
         } catch (Exception exception) {
-            LOGGER.error("Redis del key {}, exception is {}", key, exception);
+            LOGGER.error("Redis del key is {}, exception is {}", key, exception);
             return null;
         }
     }
@@ -247,7 +246,7 @@ public class RedisUtil {
         try {
             return jedisCluster.eval(script, keys, args);
         } catch (Exception exception) {
-            LOGGER.error("Redis eval script {} keys {} args {}, exception is {}", script, keys.toString(),
+            LOGGER.error("Redis eval script is {}, keys is {}, args is {}, exception is {}", script, keys.toString(),
                 args.toString(), exception);
             return null;
         }

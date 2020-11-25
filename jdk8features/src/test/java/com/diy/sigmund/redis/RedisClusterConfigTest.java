@@ -1,5 +1,6 @@
 package com.diy.sigmund.redis;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.diy.sigmund.entity.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.MapType;
 
 /**
  * @author ylm-sigmund
@@ -67,7 +71,7 @@ public class RedisClusterConfigTest {
         final Long expire = RedisUtil.expire(key1, 1, TimeUnit.HOURS);
         LOGGER.info("expire key1 设置过期时间 {}", expire);
         LOGGER.info("key1 过期时间 {} 秒", RedisUtil.ttl(key1));
-        final User user1 = RedisUtil.get(key1, () -> new TypeReference<User>() {});
+        final User user1 = RedisUtil.get(key1, new TypeReference<User>() {});
         LOGGER.info("get key1 {}", Objects.requireNonNull(user1).toString());
         final Long del = RedisUtil.del(key1);
         LOGGER.info("del key1 {}", del);
@@ -80,8 +84,6 @@ public class RedisClusterConfigTest {
     /**
      * 测试序列化和反序列化，jackson的应用
      * 
-     * @throws JsonProcessingException
-     *             JsonProcessingException
      */
     @Test
     public void testJackson() {
@@ -91,31 +93,74 @@ public class RedisClusterConfigTest {
         user.setId(1234);
         user.setName("jackson包");
         // 序列化
-        final String json = JsonUtil.toJson(user);
+        final String json = JacksonUtil.toJson(user);
         LOGGER.info("user is {}", json);
         // 反序列化
-        final User user1 = JsonUtil.toObject(json, () -> new TypeReference<User>() {});
+        final User user1 = JacksonUtil.toObject(json, new TypeReference<User>() {});
         LOGGER.info(user1.toString());
 
         // map
         final Map<Integer, String> map = new HashMap<Integer, String>();
         map.put(2234, "jackson包");
         // 序列化
-        final String mapJson = JsonUtil.toJson(map);
+        final String mapJson = JacksonUtil.toJson(map);
         LOGGER.info(mapJson);
         // 反序列化
         final Map<Integer, String> hashMap =
-            JsonUtil.toObject(mapJson, () -> new TypeReference<Map<Integer, String>>() {});
+            JacksonUtil.toObject(mapJson, new TypeReference<Map<Integer, String>>() {});
         LOGGER.info(hashMap.toString());
 
         // list
         final List<User> collect = Stream.of(user).collect(Collectors.toList());
         // 序列化
-        final String listJson = JsonUtil.toJson(collect);
+        final String listJson = JacksonUtil.toJson(collect);
         LOGGER.info(listJson);
         // 反序列化
-        final List<User> arrayList = JsonUtil.toObject(listJson, () -> new TypeReference<List<User>>() {});
+        final List<User> arrayList = JacksonUtil.toObject(listJson, new TypeReference<List<User>>() {});
         LOGGER.info(arrayList.toString());
+    }
+
+    /**
+     * jackson泛型使用示例
+     * 
+     * @throws JsonProcessingException
+     */
+    @Test
+    public void testGeneric() throws JsonProcessingException {
+        final ObjectMapper objectMapper = new ObjectMapper();
+        // List 泛型使用示例
+        String JSONInString = "[{\"id\":1234,\"name\":\"jackson包\"}]";
+        CollectionType JavaType = objectMapper.getTypeFactory().constructCollectionType(List.class, User.class);
+        List<User> personList = objectMapper.readValue(JSONInString, JavaType);
+        List<User> personList1 = objectMapper.readValue(JSONInString, new TypeReference<List<User>>() {});
+
+        // Map 泛型使用示例
+        String JSONInString1 = "{\"2234\":\"jackson包\"}";
+        MapType JavaType1 = objectMapper.getTypeFactory().constructMapType(HashMap.class, Integer.class, String.class);
+        Map<Integer, String> personMap2 = objectMapper.readValue(JSONInString1, JavaType1);
+        Map<Integer, String> personMap3 =
+            objectMapper.readValue(JSONInString1, new TypeReference<Map<Integer, String>>() {});
+        LOGGER.info("222");
+    }
+
+    /**
+     * 序列化反序列化时间
+     */
+    @Test
+    public void testToJsonForDate() {
+        // final ObjectMapper objectMapper = new ObjectMapper();
+        // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        // objectMapper.setDateFormat(dateFormat);
+        final User user = new User();
+        user.setId(1234);
+        user.setName("jackson包");
+        user.setDate(new Date());
+
+        // {"id":1234,"name":"jackson包","date":"2020-11-25 21:04:19"}
+        LOGGER.info(JacksonUtil.toJson(user));
+        LOGGER.info(JacksonUtil.toObject("{\"id\":1234,\"name\":\"jackson包\",\"date\":\"2020-11-25 21:18:21\"}",
+            new TypeReference<User>() {}).toString());
+
     }
 
 }

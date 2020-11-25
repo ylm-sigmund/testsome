@@ -1,7 +1,7 @@
 package com.diy.sigmund.redis;
 
+import java.text.SimpleDateFormat;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +15,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author ylm-sigmund
  * @since 2020/11/21 13:16
  */
-public class JsonUtil {
+public class JacksonUtil {
     /**
      * 对象映射器
      */
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    /**
+     * 序列化时格式化，按一定格式反序列化
+     * 
+     * "date":"2020-11-25 21:24:31"
+     * 
+     * date=Wed Nov 25 21:18:21 CST 2020
+     */
+    static {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        OBJECT_MAPPER.setDateFormat(dateFormat);
+    }
     /**
      * 日志
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(JsonUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JacksonUtil.class);
 
     /**
      * 序列化对象为字符串
@@ -50,24 +62,24 @@ public class JsonUtil {
     /**
      * 反序列化对象
      * 
-     * 例如：JsonUtil.toObject(mapJson, () -> new TypeReference<Map<Integer, String>>() {});
+     * 例如：JsonUtil.toObject(mapJson, new TypeReference<Map<Integer, String>>() {});
      * 
      * @param content
      *            content
-     * @param supplier
-     *            supplier
+     * @param typeReference
+     *            typeReference
      * @param <T>
      *            <T>
      * @return 结果信息
      */
-    public static <T> T toObject(String content, Supplier<TypeReference<T>> supplier) {
+    public static <T> T toObject(String content, TypeReference<T> typeReference) {
         T object = null;
         try {
-            final TypeReference<T> valueType = supplier.get();
-            object = OBJECT_MAPPER.readValue(content, valueType);
+            object = OBJECT_MAPPER.readValue(content, typeReference);
         } catch (Exception exception) {
             LOGGER.error("toObject error, content is {}, exception is {}", content, exception);
         }
         return object;
     }
+
 }
