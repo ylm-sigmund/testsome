@@ -83,7 +83,6 @@ public class RedisClusterConfigTest {
 
     /**
      * 测试序列化和反序列化，jackson的应用
-     * 
      */
     @Test
     public void testJackson() {
@@ -122,7 +121,7 @@ public class RedisClusterConfigTest {
 
     /**
      * jackson泛型使用示例
-     * 
+     *
      * @throws JsonProcessingException
      */
     @Test
@@ -160,7 +159,12 @@ public class RedisClusterConfigTest {
         LOGGER.info(JacksonUtil.toJson(user));
         LOGGER.info(JacksonUtil.toObject("{\"id\":1234,\"name\":\"jackson包\",\"date\":\"2020-11-25 21:18:21\"}",
             new TypeReference<User>() {}).toString());
+    }
 
+    @Test
+    public void testEmptyToObject() {
+        final User user = JacksonUtil.toObject("", new TypeReference<User>() {});
+        LOGGER.info(user != null ? user.toString() : null);
     }
 
 }

@@ -3,6 +3,7 @@ package com.diy.sigmund.redis;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,7 @@ public class JacksonUtil {
      */
     public static String toJson(Object value) {
         if (Objects.isNull(value)) {
+            LOGGER.info("toJson value null");
             return "";
         }
         String jsonString = "";
@@ -73,6 +75,10 @@ public class JacksonUtil {
      * @return 结果信息
      */
     public static <T> T toObject(String content, TypeReference<T> typeReference) {
+        if (StringUtils.isEmpty(content)) {
+            LOGGER.info("toObject content isEmpty");
+            return null;
+        }
         T object = null;
         try {
             object = OBJECT_MAPPER.readValue(content, typeReference);
