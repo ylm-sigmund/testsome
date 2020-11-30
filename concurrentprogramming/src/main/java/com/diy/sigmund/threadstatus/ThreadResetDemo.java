@@ -14,7 +14,7 @@ public class ThreadResetDemo {
                 if (Thread.currentThread().isInterrupted()) {
                     // before:true
                     System.out.println("before:" + Thread.currentThread().isInterrupted());
-                    //对线程进行复位，由 true 变成 false
+                    // 对线程进行复位，由 true 变成 false
                     Thread.interrupted();
                     // after:false
                     System.out.println("after:" + Thread.currentThread().isInterrupted());

@@ -11,6 +11,14 @@ public class ThreadNotify extends Thread {
         this.lock = lock;
     }
 
+    public static void main(String[] args) {
+        final Object lock = new Object();
+        final ThreadWait threadWait = new ThreadWait(lock);
+        threadWait.start();
+        final ThreadNotify threadNotify = new ThreadNotify(lock);
+        threadNotify.start();
+    }
+
     @Override
     public void run() {
         synchronized (lock) {
@@ -19,13 +27,5 @@ public class ThreadNotify extends Thread {
             lock.notify();
             System.out.println("ThreadNotify end");
         }
-    }
-
-    public static void main(String[] args) {
-        final Object lock = new Object();
-        final ThreadWait threadWait = new ThreadWait(lock);
-        threadWait.start();
-        final ThreadNotify threadNotify = new ThreadNotify(lock);
-        threadNotify.start();
     }
 }

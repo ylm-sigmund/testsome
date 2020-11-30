@@ -6,7 +6,7 @@ package com.diy.sigmund.threadsynchronized;
  */
 public class JavaP {
     public static void main(String[] args) {
-        synchronized (JavaP.class){
+        synchronized (JavaP.class) {
             System.out.println("JavaP");
         }
     }

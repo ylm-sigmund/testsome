@@ -3,8 +3,7 @@ package com.diy.sigmund.threadstatus;
 import java.util.concurrent.TimeUnit;
 
 /**
- * F:\project\knight\github\testsome>jps
- * 17680 ThreadStatusDemo
+ * F:\project\knight\github\testsome>jps 17680 ThreadStatusDemo
  *
  * F:\project\knight\github\testsome>jstack ThreadStatusDemo
  *
@@ -42,12 +41,11 @@ public class ThreadStatusDemo {
         new Thread(new BlockedClass(), "Blocke02_Thread").start();
     }
 
-    static class BlockedClass extends Thread{
+    static class BlockedClass extends Thread {
         /**
-         * If this thread was constructed using a separate
-         * <code>Runnable</code> run object, then that
-         * <code>Runnable</code> object's <code>run</code> method is called;
-         * otherwise, this method does nothing and returns.
+         * If this thread was constructed using a separate <code>Runnable</code> run object, then that
+         * <code>Runnable</code> object's <code>run</code> method is called; otherwise, this method does nothing and
+         * returns.
          * <p>
          * Subclasses of <code>Thread</code> should override this method.
          *

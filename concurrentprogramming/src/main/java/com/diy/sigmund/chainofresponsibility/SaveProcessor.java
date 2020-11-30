@@ -11,6 +11,7 @@ public class SaveProcessor extends Thread implements IRequestProcessor {
     LinkedBlockingQueue<Request> requests = new LinkedBlockingQueue<>();
 
     private IRequestProcessor nextProcessor;
+    private volatile boolean finish = false;
 
     public SaveProcessor() {
 
@@ -19,8 +20,6 @@ public class SaveProcessor extends Thread implements IRequestProcessor {
     public SaveProcessor(IRequestProcessor nextProcessor) {
         this.nextProcessor = nextProcessor;
     }
-
-    private volatile boolean finish = false;
 
     public void shutdown() {
         this.finish = true;

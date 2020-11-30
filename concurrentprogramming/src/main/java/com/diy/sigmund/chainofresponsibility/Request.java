@@ -7,7 +7,7 @@ import java.util.StringJoiner;
  * @since 2020/9/27 21:43
  */
 public class Request {
-    private  String name;
+    private String name;
 
     public String getName() {
         return name;
@@ -19,8 +19,6 @@ public class Request {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", Request.class.getSimpleName() + "[", "]")
-                .add("name='" + name + "'")
-                .toString();
+        return new StringJoiner(", ", Request.class.getSimpleName() + "[", "]").add("name='" + name + "'").toString();
     }
 }

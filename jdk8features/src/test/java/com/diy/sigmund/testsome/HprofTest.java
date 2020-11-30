@@ -11,19 +11,15 @@ import java.util.concurrent.TimeUnit;
 public class HprofTest {
 
     /**
-     * C:\Users\ylm>jps
-     * 9696
-     * 10004 RemoteMavenServer
-     * 13832 Jps
-     * 21144 HprofTest
-     * 1260 Launcher
+     * C:\Users\ylm>jps 9696 10004 RemoteMavenServer 13832 Jps 21144 HprofTest 1260 Launcher
      *
-     * F:\project\knight\github\testsome>jmap -dump:file=test.hprof,format=b 21144
-     * Dumping heap to F:\project\knight\github\testsome\test.hprof ...
-     * Heap dump file created
+     * F:\project\knight\github\testsome>jmap -dump:file=test.hprof,format=b 21144 Dumping heap to
+     * F:\project\knight\github\testsome\test.hprof ... Heap dump file created
      *
-     * @param args args
-     * @throws InterruptedException InterruptedException
+     * @param args
+     *            args
+     * @throws InterruptedException
+     *             InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
         List<Integer> ids = new ArrayList<>();

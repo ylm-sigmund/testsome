@@ -3,9 +3,8 @@ package com.diy.sigmund.threadsynchronized;
 import java.util.concurrent.TimeUnit;
 
 /**
- * synchronized
- * 2种表现形式：锁方法，锁代码块
- * 2种作用范围：对象锁，类锁（跨对象跨线程保护）
+ * synchronized 2种表现形式：锁方法，锁代码块 2种作用范围：对象锁，类锁（跨对象跨线程保护）
+ * 
  * @author ylm-sigmund
  * @since 2020/10/25 12:46
  */
@@ -26,18 +25,6 @@ public class CountIncrement {
         // count++;
     }
 
-    public void synchronizedIncrement() {
-        try {
-            TimeUnit.MILLISECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        synchronized (this) {
-            count++;
-        }
-        // count++;
-    }
-
     public static void main(String[] args) {
         for (int i = 0; i < 1000; i++) {
             // new Thread(() -> increment()).start();
@@ -50,5 +37,17 @@ public class CountIncrement {
             e.printStackTrace();
         }
         System.out.println("final result:" + count);
+    }
+
+    public void synchronizedIncrement() {
+        try {
+            TimeUnit.MILLISECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        synchronized (this) {
+            count++;
+        }
+        // count++;
     }
 }

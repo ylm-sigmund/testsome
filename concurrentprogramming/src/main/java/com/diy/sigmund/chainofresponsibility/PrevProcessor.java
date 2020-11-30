@@ -10,6 +10,7 @@ public class PrevProcessor extends Thread implements IRequestProcessor {
     LinkedBlockingQueue<Request> requests = new LinkedBlockingQueue<>();
 
     private IRequestProcessor nextProcessor;
+    private volatile boolean finish = false;
 
     public PrevProcessor() {
 
@@ -18,8 +19,6 @@ public class PrevProcessor extends Thread implements IRequestProcessor {
     public PrevProcessor(IRequestProcessor nextProcessor) {
         this.nextProcessor = nextProcessor;
     }
-
-    private volatile boolean finish = false;
 
     /**
      * 对外提供关闭的方法

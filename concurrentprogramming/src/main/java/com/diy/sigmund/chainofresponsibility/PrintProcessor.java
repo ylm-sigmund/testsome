@@ -10,15 +10,15 @@ public class PrintProcessor extends Thread implements IRequestProcessor {
     LinkedBlockingQueue<Request> requests = new LinkedBlockingQueue<>();
 
     private IRequestProcessor nextProcessor;
+    private volatile boolean finish = false;
 
     public PrintProcessor() {
 
     }
+
     public PrintProcessor(IRequestProcessor nextProcessor) {
         this.nextProcessor = nextProcessor;
     }
-
-    private volatile boolean finish = false;
 
     public void shutdown() {
         this.finish = true;

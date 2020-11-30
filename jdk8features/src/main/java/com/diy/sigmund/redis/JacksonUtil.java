@@ -21,22 +21,22 @@ public class JacksonUtil {
      * 对象映射器
      */
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    /**
+     * 日志
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(JacksonUtil.class);
 
     /**
      * 序列化时格式化，按一定格式反序列化
-     * 
+     *
      * "date":"2020-11-25 21:24:31"
-     * 
+     *
      * date=Wed Nov 25 21:18:21 CST 2020
      */
     static {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         OBJECT_MAPPER.setDateFormat(dateFormat);
     }
-    /**
-     * 日志
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(JacksonUtil.class);
 
     /**
      * 序列化对象为字符串
