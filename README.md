@@ -1,6 +1,8 @@
 # testsome
 
 #### Log
+- 2020-11-30 [concurrentprogramming]生产者消费者
+>`com.diy.sigmund.producerconsumer`
 - 2020-11-30 [jdk8features]新增设计模式，外观模式、装饰器模式、适配器模式、拦截过滤器模式、excelimport
 > `com.diy.sigmund.designpatterns`
 - 2020-11-25 [jdk8features]单元测试：jackson泛型使用示例；序列化时格式化，按一定格式反序列化
