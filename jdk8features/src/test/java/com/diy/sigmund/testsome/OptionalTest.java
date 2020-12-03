@@ -1,12 +1,11 @@
 package com.diy.sigmund.testsome;
 
+import com.diy.sigmund.entity.Acthiactinst;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.junit.Test;
-
-import com.diy.sigmund.entity.Acthiactinst;
 
 /**
  * @author yao liming
@@ -67,7 +66,10 @@ public class OptionalTest {
     }
 
     /**
-     * public public void ifPresent(Consumer<? super T> consumer) { if (value != null) consumer.accept(value); }
+     * public void ifPresent(Consumer<? super T> consumer) {
+     * if (value != null)
+     * consumer.accept(value);
+     * }
      */
     @Test
     public void ifPresent() {
@@ -84,7 +86,9 @@ public class OptionalTest {
     }
 
     /**
-     * public T orElse(T other) { return value != null ? value : other; }
+     * public T orElse(T other) {
+     * return value != null ? value : other;
+     * }
      */
     @Test
     public void orElse() {
@@ -97,7 +101,9 @@ public class OptionalTest {
     }
 
     /**
-     * public T orElseGet(Supplier<? extends T> other) { return value != null ? value : other.get(); }
+     * public T orElseGet(Supplier<? extends T> other) {
+     * return value != null ? value : other.get();
+     * }
      */
     @Test
     public void orElseGet() {
@@ -110,8 +116,13 @@ public class OptionalTest {
     }
 
     /**
-     * public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X { if (value != null)
-     * { return value; } else { throw exceptionSupplier.get(); } }
+     * public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
+     * if (value != null) {
+     * return value;
+     * } else {
+     * throw exceptionSupplier.get();
+     * }
+     * }
      */
     @Test
     public void orElseThrow() {

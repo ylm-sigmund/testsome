@@ -1,9 +1,9 @@
 package com.diy.sigmund.testsome;
 
+import org.junit.Test;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.junit.Test;
 
 /**
  * @author ylm-sigmund
