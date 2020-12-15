@@ -1,6 +1,7 @@
 # testsome
 
 #### Log
+- 2020-12-15 [jdk8features]更新线程测试类以及枚举类
 - 2020-11-30 [concurrentprogramming]生产者消费者
 >`com.diy.sigmund.producerconsumer`
 - 2020-11-30 [jdk8features]新增设计模式，外观模式、装饰器模式、适配器模式、拦截过滤器模式、excelimport
