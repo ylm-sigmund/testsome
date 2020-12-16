@@ -2,7 +2,9 @@ package com.diy.sigmund.util.thread;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.LongAdder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 【强制】创建线程或线程池时请指定有意义的线程名称，方便出错时回溯。
@@ -13,19 +15,32 @@ import java.util.concurrent.atomic.LongAdder;
  * @since 2020/12/15 19:42
  */
 public class UserThreadFactory implements ThreadFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserThreadFactory.class);
     private final String namePrefix;
     private final AtomicInteger nextId = new AtomicInteger(1);
 
-    // 定义线程组名称，在 jstack 问题排查时，非常有帮助
-    UserThreadFactory(String whatFeaturOfGroup) {
-        namePrefix = "From UserThreadFactory's " + whatFeaturOfGroup + "-Worker-";
+    /**
+     * 定义线程组名称，在 jstack 问题排查时，非常有帮助
+     * 
+     * @param whatFeatureOfGroup
+     *            whatFeatureOfGroup
+     */
+    public UserThreadFactory(String whatFeatureOfGroup) {
+        namePrefix = "From UserThreadFactory's " + whatFeatureOfGroup + "-Worker-";
     }
 
+    /**
+     * 创建线程
+     * 
+     * @param task
+     *            Runnable
+     * @return Thread
+     */
     @Override
     public Thread newThread(Runnable task) {
         String name = namePrefix + nextId.getAndIncrement();
         Thread thread = new Thread(task, name);
-        System.out.println(thread.getName());
+        LOGGER.info("UserThreadFactory newThread'name={}", thread.getName());
         return thread;
     }
 }

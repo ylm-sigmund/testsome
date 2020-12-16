@@ -1,9 +1,23 @@
 package com.diy.sigmund.testsome;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.diy.sigmund.util.thread.UserThreadFactory;
 
 /**
  * 【强制】线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式， 这样的处理方式让写的同学更加明确线程池的运行规则，规避资源耗尽的风险。
@@ -18,8 +32,74 @@ import org.junit.Test;
  */
 public class CreateThreadTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateThreadTest.class);
+
     @Test
-    public void createThreadTest() {
+    public void createThreadTest() throws ExecutionException, InterruptedException {
         final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Executors.newFixedThreadPool(4);
+        final int cpuNum = Runtime.getRuntime().availableProcessors();
+        LOGGER.info("cpuNum={}", cpuNum);
+
+        RejectedExecutionHandler customRejectedExecutionHandler = (Runnable runnable, ThreadPoolExecutor executor) -> {
+            LOGGER.error(
+                "customRejectedExecutionHandler:The thread pool is full and the task is discarded,ThreadPoolExecutor={}",
+                executor.toString());
+        };
+        final LinkedBlockingQueue<Runnable> runnables = new LinkedBlockingQueue<>(1);
+        final UserThreadFactory testOnly = new UserThreadFactory("testOnly");
+        final ExecutorService customThreadPool =
+            getCustomThreadPool(1, 1, 0L, TimeUnit.MILLISECONDS, runnables, testOnly, customRejectedExecutionHandler);
+        List<Future<?>> futureList = new ArrayList<>();
+        futureList.add(customThreadPool.submit(testRunnable(3)));
+        futureList.add(customThreadPool.submit(testRunnable(3)));
+        futureList.add(customThreadPool.submit(testRunnable(3)));
+
+        for (Future<?> future : futureList) {
+            future.get();
+        }
+        customThreadPool.shutdown();
+        LOGGER.info("customThreadPool.isTerminated()={}", customThreadPool.isTerminated());
     }
+
+    public ExecutorService getCustomThreadPool(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,
+        BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
+        LOGGER.info(
+            "Start to initialize the thread pool[corePoolSize={},maximumPoolSize={},keepAliveTime={},TimeUnit={}]...",
+            corePoolSize, maximumPoolSize, keepAliveTime, unit);
+        ExecutorService executorService = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit,
+            workQueue, threadFactory, handler);
+        LOGGER.info("Initializing the thread pool=complete!");
+        return executorService;
+    }
+
+    public Runnable testRunnable(int timeout) {
+        final Runnable runnable = () -> {
+            final String name = Thread.currentThread().getName();
+            final String groupName = Thread.currentThread().getThreadGroup().getName();
+            try {
+                TimeUnit.SECONDS.sleep(timeout);
+                // int a = 1/0;
+                LOGGER.info("currentThread().getName()={},currentThread().getThreadGroup().getName()={}", name,
+                    groupName);
+            } catch (Exception e) {
+                LOGGER.error("currentThread().getName()={},currentThread().getThreadGroup().getName()={}", name,
+                    groupName);
+            }
+        };
+        return runnable;
+    }
+
+    /**
+     * 返回可用于Java虚拟机的处理器数量。 在虚拟机的特定调用期间，此值可能会更改。 因此，对可用处理器数量敏感的应用程序应该偶尔轮询此属性并适当地调整其资源使用情况。
+     *
+     * 返回值： 虚拟机可用的最大处理器数量； 永远不小于一个
+     */
+    @Test
+    public void testCpuNum() {
+        final int cpuNum = Runtime.getRuntime().availableProcessors();
+        // cpuNum=8
+        LOGGER.info("cpuNum={}", cpuNum);
+    }
+
 }
