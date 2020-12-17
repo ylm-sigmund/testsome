@@ -15,8 +15,17 @@ import org.slf4j.LoggerFactory;
  * @since 2020/12/15 19:42
  */
 public class UserThreadFactory implements ThreadFactory {
+    /**
+     * 日志
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(UserThreadFactory.class);
+    /**
+     * 名称前缀
+     */
     private final String namePrefix;
+    /**
+     * 线程组编号
+     */
     private final AtomicInteger nextId = new AtomicInteger(1);
 
     /**
@@ -30,7 +39,7 @@ public class UserThreadFactory implements ThreadFactory {
     }
 
     /**
-     * 创建线程
+     * 创建线程，打印线程名
      * 
      * @param task
      *            Runnable

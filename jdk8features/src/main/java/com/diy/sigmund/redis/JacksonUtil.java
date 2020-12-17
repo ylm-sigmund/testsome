@@ -56,7 +56,7 @@ public class JacksonUtil {
         try {
             jsonString = OBJECT_MAPPER.writeValueAsString(value);
         } catch (Exception exception) {
-            LOGGER.error("toJson error, value is {}, exception is {}", value, exception);
+            LOGGER.error("toJson error, value={}, exception={}", value, exception);
         }
         return jsonString;
     }
@@ -83,7 +83,7 @@ public class JacksonUtil {
         try {
             object = OBJECT_MAPPER.readValue(content, typeReference);
         } catch (Exception exception) {
-            LOGGER.error("toObject error, content is {}, exception is {}", content, exception);
+            LOGGER.error("toObject error, content={}, exception={}", content, exception);
         }
         return object;
     }

@@ -74,7 +74,7 @@ public class RedisUtil {
             jedisCluster.setex(key, seconds, JacksonUtil.toJson(value));
             return true;
         } catch (Exception exception) {
-            LOGGER.error("Redis setex key is {}, value is {}, timeout is {}, timeUnit is {}, exception is {}", key,
+            LOGGER.error("Redis setex key={}, value={}, timeout={}, timeUnit={}, exception={}", key,
                 value, timeout, timeUnit, exception);
             return false;
         }
@@ -98,7 +98,7 @@ public class RedisUtil {
             final String json = jedisCluster.get(key);
             return JacksonUtil.toObject(json, typeReference);
         } catch (Exception exception) {
-            LOGGER.error("Redis get key is {}, exception is {}", key, exception);
+            LOGGER.error("Redis get key={}, exception={}", key, exception);
             return null;
         }
     }
@@ -119,7 +119,7 @@ public class RedisUtil {
             int seconds = (int)timeUnit.toSeconds(timeout);
             return jedisCluster.expire(key, seconds);
         } catch (Exception exception) {
-            LOGGER.error("Redis expire key is {}, exception is {}", key, exception);
+            LOGGER.error("Redis expire key={}, exception={}", key, exception);
             return null;
         }
     }
@@ -135,7 +135,7 @@ public class RedisUtil {
         try {
             return jedisCluster.exists(key);
         } catch (Exception exception) {
-            LOGGER.error("Redis exists key is {}, exception is {}", key, exception);
+            LOGGER.error("Redis exists key={}, exception={}", key, exception);
             return false;
         }
     }
@@ -151,7 +151,7 @@ public class RedisUtil {
         try {
             return jedisCluster.ttl(key);
         } catch (Exception exception) {
-            LOGGER.error("Redis ttl key is {}, exception is {}", key, exception);
+            LOGGER.error("Redis ttl key={}, exception={}", key, exception);
             return null;
         }
     }
@@ -167,7 +167,7 @@ public class RedisUtil {
         try {
             return jedisCluster.del(key);
         } catch (Exception exception) {
-            LOGGER.error("Redis del key is {}, exception is {}", key, exception);
+            LOGGER.error("Redis del key={}, exception={}", key, exception);
             return null;
         }
     }
@@ -197,7 +197,7 @@ public class RedisUtil {
         try {
             return jedisCluster.eval(script, keys, args);
         } catch (Exception exception) {
-            LOGGER.error("Redis eval script is {}, keys is {}, args is {}, exception is {}", script, keys.toString(),
+            LOGGER.error("Redis eval script={}, keys={}, args={}, exception={}", script, keys.toString(),
                 args.toString(), exception);
             return null;
         }
@@ -208,8 +208,8 @@ public class RedisUtil {
      */
 
     private void initJedisCluster() {
-        LOGGER.info("redisClusterConfig is {}", redisClusterConfig.toString());
-        LOGGER.info("redisPoolConfig is {}", redisPoolConfig.toString());
+        LOGGER.info("redisClusterConfig={}", redisClusterConfig.toString());
+        LOGGER.info("redisPoolConfig={}", redisPoolConfig.toString());
         Set<HostAndPort> node = getNode(redisClusterConfig.getNodes());
         final String pwd = redisClusterConfig.getPwd();
         JedisPoolConfig jedisPoolConfig = getJedisPoolConfig();

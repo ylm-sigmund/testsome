@@ -93,7 +93,7 @@ public class RedisClusterConfigTest {
         user.setName("jackson包");
         // 序列化
         final String json = JacksonUtil.toJson(user);
-        LOGGER.info("user is {}", json);
+        LOGGER.info("user={}", json);
         // 反序列化
         final User user1 = JacksonUtil.toObject(json, new TypeReference<User>() {});
         LOGGER.info(user1.toString());

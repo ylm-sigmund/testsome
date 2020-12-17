@@ -1,4 +1,4 @@
-package com.diy.sigmund.testsome;
+package com.diy.sigmund.util.thread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +16,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.diy.sigmund.util.thread.UserThreadFactory;
 
 /**
  * 【强制】线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式， 这样的处理方式让写的同学更加明确线程池的运行规则，规避资源耗尽的风险。

@@ -77,11 +77,11 @@ public class OptionalTest {
         Optional<Object> optional2 = Optional.ofNullable(null);// Optional.empty
         // value is 1
         optional1.ifPresent(integer -> {
-            System.out.println("value is " + integer);
+            System.out.println("value=" + integer);
         });
         // 不会输出任何内容
         optional2.ifPresent(aa -> {
-            System.out.println("value is " + aa);
+            System.out.println("value=" + aa);
         });
     }
 
