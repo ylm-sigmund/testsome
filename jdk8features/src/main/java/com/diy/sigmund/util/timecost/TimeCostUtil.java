@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 资料：https://www.cnblogs.com/yihuihui/p/12404509.html
+ * 
  * 统计代码块耗时的工具，在代码的简洁性和统一管理上都要优雅很多，可以减少大量冗余代码
  * 
  * 在try(){}执行完毕之后，会调用方法AutoCloseable#close方法；
