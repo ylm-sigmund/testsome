@@ -135,16 +135,16 @@ public final class ThreadPoolUtil {
      *            泛型
      * @return 集合
      */
-    public <V> List<V> awaitTaskDone(List<Future<V>> futureList) {
+    public <V> List<V> awaitCallableTaskDone(List<Future<V>> futureList) {
         List<V> result = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(futureList)) {
             for (Future<V> future : futureList) {
                 try {
                     result.add(future.get());
-                } catch (Exception e) {
+                } catch (Exception exception) {
                     result.add(null);
                     LOGGER.error("ThreadPoolUtil.awaitTaskDone future.get() error,currentThread().getName()={}",
-                        Thread.currentThread().getName());
+                        Thread.currentThread().getName(), exception);
                 }
             }
         }
@@ -157,14 +157,14 @@ public final class ThreadPoolUtil {
      * @param futureList
      *            futureList
      */
-    public void awaitTaskDoneNoReturn(List<Future> futureList) {
+    public void awaitRunnableTaskDone(List<Future> futureList) {
         if (CollectionUtils.isNotEmpty(futureList)) {
             for (Future future : futureList) {
                 try {
                     future.get();
-                } catch (Exception e) {
+                } catch (Exception exception) {
                     LOGGER.error("ThreadPoolUtil.awaitTaskDoneNoReturn future.get() error,currentThread().getName()={}",
-                        Thread.currentThread().getName());
+                        Thread.currentThread().getName(), exception);
                 }
             }
         }

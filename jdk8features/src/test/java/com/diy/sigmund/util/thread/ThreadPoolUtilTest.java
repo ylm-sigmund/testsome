@@ -28,7 +28,7 @@ public class ThreadPoolUtilTest {
         futureList.add(executorService.submit(testRunnable(3)));
         futureList.add(executorService.submit(testRunnable(3)));
         futureList.add(executorService.submit(testRunnable(3)));
-        ThreadPoolUtil.getInstance().awaitTaskDoneNoReturn(futureList);
+        ThreadPoolUtil.getInstance().awaitRunnableTaskDone(futureList);
         executorService.shutdown();
 
         final ExecutorService executorService1 = ThreadPoolUtil.getInstance().newDefaultThreadPool(true, "testSome");
@@ -37,7 +37,7 @@ public class ThreadPoolUtilTest {
         futureList1.add(executorService1.submit(testCallable(3)));
         futureList1.add(executorService1.submit(testCallable(3)));
         futureList1.add(executorService1.submit(testCallable(3)));
-        final List<String> list1 = ThreadPoolUtil.getInstance().awaitTaskDone(futureList1);
+        final List<String> list1 = ThreadPoolUtil.getInstance().awaitCallableTaskDone(futureList1);
         list1.forEach(LOGGER::info);
         executorService1.shutdown();
     }
@@ -50,7 +50,7 @@ public class ThreadPoolUtilTest {
         futureList.add(executorService.submit(testRunnable(3)));
         futureList.add(executorService.submit(testRunnable(3)));
         futureList.add(executorService.submit(testRunnable(3)));
-        ThreadPoolUtil.getInstance().awaitTaskDoneNoReturn(futureList);
+        ThreadPoolUtil.getInstance().awaitRunnableTaskDone(futureList);
         executorService.shutdown();
 
         final ExecutorService executorService1 = ThreadPoolUtil.getInstance().newSingleThreadExecutor("testSome");
@@ -59,7 +59,7 @@ public class ThreadPoolUtilTest {
         futureList1.add(executorService1.submit(testCallable(3)));
         futureList1.add(executorService1.submit(testCallable(3)));
         futureList1.add(executorService1.submit(testCallable(3)));
-        final List<String> list1 = ThreadPoolUtil.getInstance().awaitTaskDone(futureList1);
+        final List<String> list1 = ThreadPoolUtil.getInstance().awaitCallableTaskDone(futureList1);
         list1.forEach(LOGGER::info);
         executorService1.shutdown();
     }
@@ -72,7 +72,7 @@ public class ThreadPoolUtilTest {
         futureList.add(executorService.submit(testRunnable(3)));
         futureList.add(executorService.submit(testRunnable(3)));
         futureList.add(executorService.submit(testRunnable(3)));
-        ThreadPoolUtil.getInstance().awaitTaskDoneNoReturn(futureList);
+        ThreadPoolUtil.getInstance().awaitRunnableTaskDone(futureList);
         executorService.shutdown();
 
         final ExecutorService executorService1 = ThreadPoolUtil.getInstance().newFixedThreadPool(4, "testSome");
@@ -81,9 +81,48 @@ public class ThreadPoolUtilTest {
         futureList1.add(executorService1.submit(testCallable(3)));
         futureList1.add(executorService1.submit(testCallable(3)));
         futureList1.add(executorService1.submit(testCallable(3)));
-        final List<String> list1 = ThreadPoolUtil.getInstance().awaitTaskDone(futureList1);
+        final List<String> list1 = ThreadPoolUtil.getInstance().awaitCallableTaskDone(futureList1);
         list1.forEach(LOGGER::info);
         executorService1.shutdown();
+    }
+
+    @Test
+    public void testSome3() throws ExecutionException, InterruptedException {
+        final ExecutorService executorService1 = ThreadPoolUtil.getInstance().newFixedThreadPool(4, "testSome");
+        List<Future<String>> futureList1 = new ArrayList<>();
+        futureList1.add(executorService1.submit(testCallable(3)));
+        futureList1.add(executorService1.submit(testCallable(3)));
+        futureList1.add(executorService1.submit(testCallable(3)));
+        futureList1.add(executorService1.submit(testCallable(3)));
+        futureList1.add(executorService1.submit(() -> {
+            int a = 1 / 0;
+            return "success";
+        }));
+        final List<String> list1 = ThreadPoolUtil.getInstance().awaitCallableTaskDone(futureList1);
+        list1.forEach(LOGGER::info);
+        executorService1.shutdown();
+    }
+
+    @Test
+    public void testSome4() {
+        final ExecutorService executorService1 = ThreadPoolUtil.getInstance().newFixedThreadPool(4, "testSome");
+        List<Future<String>> futureList1 = new ArrayList<>();
+        futureList1.add(executorService1.submit(testCallable(10)));
+        futureList1.add(executorService1.submit(testCallable(10)));
+        futureList1.add(executorService1.submit(testCallable(10)));
+        // 前面的任务会执行完毕，后面的任务会执行拒绝策略
+        executorService1.shutdown();
+        // 线程中设计到了InterruptedException的会抛出该异常
+        // executorService1.shutdownNow();
+        futureList1.add(executorService1.submit(testCallable(3)));
+        futureList1.add(executorService1.submit(() -> {
+            int a = 1;
+            TimeUnit.SECONDS.sleep(5);
+            return "success";
+        }));
+        // shutdown()后短时间内没有跑下面方法
+        // final List<String> list1 = ThreadPoolUtil.getInstance().awaitCallableTaskDone(futureList1);
+        // list1.forEach(LOGGER::info);
     }
 
     public Runnable testRunnable(int timeout) {
@@ -92,12 +131,12 @@ public class ThreadPoolUtilTest {
             final String groupName = Thread.currentThread().getThreadGroup().getName();
             try {
                 TimeUnit.SECONDS.sleep(timeout);
-                int a = 1 / 0;
+                int a = 1 / 1;
                 LOGGER.info("currentThread().getName()={},currentThread().getThreadGroup().getName()={}", name,
                     groupName);
-            } catch (Exception e) {
+            } catch (Exception exception) {
                 LOGGER.error("currentThread().getName()={},currentThread().getThreadGroup().getName()={}", name,
-                    groupName);
+                    groupName, exception);
             }
         };
         return runnable;
@@ -109,12 +148,12 @@ public class ThreadPoolUtilTest {
             final String groupName = Thread.currentThread().getThreadGroup().getName();
             try {
                 TimeUnit.SECONDS.sleep(timeout);
-                int a = 1 / 0;
+                int a = 1 / 1;
                 LOGGER.info("currentThread().getName()={},currentThread().getThreadGroup().getName()={}", name,
                     groupName);
-            } catch (Exception e) {
+            } catch (Exception exception) {
                 LOGGER.error("currentThread().getName()={},currentThread().getThreadGroup().getName()={}", name,
-                    groupName);
+                    groupName, exception);
             }
             return "success";
         };

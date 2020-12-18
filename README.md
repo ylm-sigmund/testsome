@@ -1,6 +1,7 @@
 # testsome
 
 #### Log
+- 2020-12-18 [jdk8features]完善线程池工具类，使用实现AutoCloseable和lambda表达式新增统计代码块耗时工具类com.diy.sigmund.util.timecost
 - 2020-12-16 [jdk8features]线程池不允许使用Executors去创建，而是通过ThreadPoolExecutor的方式
 - 2020-12-15 [jdk8features]更新线程测试类以及枚举类
 - 2020-11-30 [concurrentprogramming]生产者消费者
