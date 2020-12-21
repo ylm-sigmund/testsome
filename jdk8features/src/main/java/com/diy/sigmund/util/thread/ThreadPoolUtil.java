@@ -142,7 +142,7 @@ public final class ThreadPoolUtil {
             for (Future<V> future : futureList) {
                 try {
                     result.add(future.get());
-                } catch (InterruptedException | ExecutionException exception) {
+                } catch (Exception exception) {
                     result.add(null);
                     LOGGER.error("ThreadPoolUtil.awaitTaskDone future.get() error,currentThread().getName()={}",
                         Thread.currentThread().getName(), exception);
