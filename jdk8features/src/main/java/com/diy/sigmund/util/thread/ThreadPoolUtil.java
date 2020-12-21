@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -141,7 +142,7 @@ public final class ThreadPoolUtil {
             for (Future<V> future : futureList) {
                 try {
                     result.add(future.get());
-                } catch (Exception exception) {
+                } catch (InterruptedException | ExecutionException exception) {
                     result.add(null);
                     LOGGER.error("ThreadPoolUtil.awaitTaskDone future.get() error,currentThread().getName()={}",
                         Thread.currentThread().getName(), exception);

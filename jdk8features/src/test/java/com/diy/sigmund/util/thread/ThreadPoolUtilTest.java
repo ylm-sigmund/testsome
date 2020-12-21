@@ -21,7 +21,7 @@ public class ThreadPoolUtilTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(ThreadPoolUtilTest.class);
 
     @Test
-    public void testSome() throws ExecutionException, InterruptedException {
+    public void testNewDefaultThreadPool() throws ExecutionException, InterruptedException {
         final ExecutorService executorService = ThreadPoolUtil.getInstance().newDefaultThreadPool(true, "testSome");
         List<Future> futureList = new ArrayList<>();
         futureList.add(executorService.submit(testRunnable(3)));
@@ -43,7 +43,7 @@ public class ThreadPoolUtilTest {
     }
 
     @Test
-    public void testSome1() throws ExecutionException, InterruptedException {
+    public void testNewSingleThreadExecutor() throws ExecutionException, InterruptedException {
         final ExecutorService executorService = ThreadPoolUtil.getInstance().newSingleThreadExecutor("testSome");
         List<Future> futureList = new ArrayList<>();
         futureList.add(executorService.submit(testRunnable(3)));
@@ -65,7 +65,7 @@ public class ThreadPoolUtilTest {
     }
 
     @Test
-    public void testSome2() throws ExecutionException, InterruptedException {
+    public void testNewFixedThreadPool() throws ExecutionException, InterruptedException {
         final ExecutorService executorService = ThreadPoolUtil.getInstance().newFixedThreadPool(4, "testSome");
         List<Future> futureList = new ArrayList<>();
         futureList.add(executorService.submit(testRunnable(3)));
@@ -87,7 +87,7 @@ public class ThreadPoolUtilTest {
     }
 
     @Test
-    public void testSome3() throws ExecutionException, InterruptedException {
+    public void testNewFixedThreadPoolByException() throws ExecutionException, InterruptedException {
         final ExecutorService executorService1 = ThreadPoolUtil.getInstance().newFixedThreadPool(4, "testSome");
         List<Future<String>> futureList1 = new ArrayList<>();
         futureList1.add(executorService1.submit(testCallable(3)));
@@ -104,7 +104,21 @@ public class ThreadPoolUtilTest {
     }
 
     @Test
-    public void testSome4() {
+    public void testNewFixedThreadPoolAndSetUncaughtExceptionHandler() throws ExecutionException, InterruptedException {
+        final ExecutorService executorService1 = ThreadPoolUtil.getInstance().newFixedThreadPool(4, "testSome");
+        List<Future<String>> futureList1 = new ArrayList<>();
+        futureList1.add(executorService1.submit(testCallable(3)));
+        futureList1.add(executorService1.submit(() -> {
+            int a = 1 / 0;
+            return "success";
+        }));
+        final List<String> list1 = ThreadPoolUtil.getInstance().awaitCallableTaskDone(futureList1);
+        list1.forEach(LOGGER::info);
+        executorService1.shutdown();
+    }
+
+    @Test
+    public void testNewFixedThreadPoolAndShutdown() {
         final ExecutorService executorService1 = ThreadPoolUtil.getInstance().newFixedThreadPool(4, "testSome");
         List<Future<String>> futureList1 = new ArrayList<>();
         futureList1.add(executorService1.submit(testCallable(10)));

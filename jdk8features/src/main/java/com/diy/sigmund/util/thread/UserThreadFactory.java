@@ -49,6 +49,9 @@ public class UserThreadFactory implements ThreadFactory {
     public Thread newThread(Runnable task) {
         String name = namePrefix + nextId.getAndIncrement();
         Thread thread = new Thread(task, name);
+        // 处理Runnable线程内的非受检异常
+        thread.setUncaughtExceptionHandler((th, throwable) -> LOGGER
+            .error("From UserThreadFactory uncaughtException name={},Throwable={}", th.getName(), throwable));
         LOGGER.info("UserThreadFactory newThread'name={}", thread.getName());
         return thread;
     }
