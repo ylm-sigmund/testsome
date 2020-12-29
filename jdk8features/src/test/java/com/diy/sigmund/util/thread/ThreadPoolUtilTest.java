@@ -117,6 +117,36 @@ public class ThreadPoolUtilTest {
         executorService1.shutdown();
     }
 
+    /**
+     * 线程中的Runnable或Callable，若不catch异常，则异常不会往外抛出
+     */
+    @Test
+    public void testNewFixedThreadPoolAndIsTerminated() {
+        final ExecutorService executorService1 = ThreadPoolUtil.getInstance().newFixedThreadPool(4, "testSome");
+        List<Future<String>> futureList1 = new ArrayList<>();
+        futureList1.add(executorService1.submit(testCallable(3)));
+        futureList1.add(executorService1.submit(() -> {
+            try {
+                int a = 1 / 0;
+            } catch (Exception exception) {
+                LOGGER.error("ThreadPoolUtil.awaitTaskDone future.get() error,currentThread().getName()={}",
+                    Thread.currentThread().getName(), exception);
+            }
+            return "success";
+        }));
+        // final List<String> list1 = ThreadPoolUtil.getInstance().awaitCallableTaskDone(futureList1);
+        // list1.forEach(LOGGER::info);
+        executorService1.shutdown();
+        while (!executorService1.isTerminated()) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(50);
+            } catch (InterruptedException e) {
+                LOGGER.error("InterruptedException", e);
+            }
+        }
+        LOGGER.info("end...");
+    }
+
     @Test
     public void testNewFixedThreadPoolAndShutdown() {
         final ExecutorService executorService1 = ThreadPoolUtil.getInstance().newFixedThreadPool(4, "testSome");

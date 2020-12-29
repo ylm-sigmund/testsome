@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -128,7 +127,9 @@ public final class ThreadPoolUtil {
     }
 
     /**
-     * 等待任务执行结束，同步进行
+     * 等待任务执行结束，同步进行，可catch住线程中的Runnable或Callable
+     * 
+     * 该方法中抛出的线程是主线程，非线程池中的线程 currentThread().getName()=main
      * 
      * @param futureList
      *            futureList
@@ -153,8 +154,10 @@ public final class ThreadPoolUtil {
     }
 
     /**
-     * 等待任务执行结束，同步进行，无返回值
-     *
+     * 等待任务执行结束，同步进行，无返回值，可catch住线程中的Runnable或Callable
+     * 
+     * 该方法中抛出的线程是主线程，非线程池中的线程 currentThread().getName()=main
+     * 
      * @param futureList
      *            futureList
      */
