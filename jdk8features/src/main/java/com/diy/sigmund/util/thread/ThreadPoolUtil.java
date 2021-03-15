@@ -127,6 +127,42 @@ public final class ThreadPoolUtil {
     }
 
     /**
+     * 测试线程池运行规律
+     * 
+     * @param corePoolSize
+     *            线程池维护线程的最少数量
+     * 
+     * @param maximumPoolSize
+     *            线程池维护线程的最大数量
+     * @param whatFeatureOfGroup
+     *            根据外部特征进行分组的组名
+     * @return ExecutorService
+     */
+    public ExecutorService newTestFixedThreadPool(int corePoolSize, int maximumPoolSize, String whatFeatureOfGroup) {
+        if (corePoolSize <= 0) {
+            corePoolSize = CPU_COUNT;
+        }
+        // 配置队列容量，避免堆积大量的请求，从而导致 OOM。
+        // int capacity = corePoolSize * 10;
+        int capacity = 10;
+        final LinkedBlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>(capacity);
+        final UserThreadFactory userThreadFactory = new UserThreadFactory(whatFeatureOfGroup);
+        // future.get()会阻塞
+        // final RejectedExecutionHandler rejectedExecutionHandler = customeRejectedExecutionHandler();
+        // 对拒绝任务抛弃处理，并且直接抛出异常RejectedExecutionException
+        final RejectedExecutionHandler rejectedExecutionHandler = new ThreadPoolExecutor.AbortPolicy();
+        // CallerRunsPolicy在任务被拒绝添加后，会调用当前线程池的所在的线程去执行被拒绝的任务。
+        // currentThread().getName()=main,currentThread().getThreadGroup().getName()=main
+        // final RejectedExecutionHandler rejectedExecutionHandler = new ThreadPoolExecutor.CallerRunsPolicy();
+        // 空实现，会让被线程池拒绝的任务直接抛弃，不会抛异常也不会执行 future.get()会阻塞
+        // final RejectedExecutionHandler rejectedExecutionHandler = new ThreadPoolExecutor.DiscardPolicy();
+        // DiscardOldestPolicy策略的作用是，当任务被拒绝添加时，会抛弃任务队列中最旧的任务也就是最先加入队列的，再把这个新任务添加进去。future.get()会阻塞
+        // final RejectedExecutionHandler rejectedExecutionHandler = new ThreadPoolExecutor.DiscardOldestPolicy();
+        return getCustomThreadPool(corePoolSize, maximumPoolSize, 0L, TimeUnit.MILLISECONDS, workQueue,
+            userThreadFactory, rejectedExecutionHandler);
+    }
+
+    /**
      * 等待任务执行结束，同步进行，可catch住线程中的Runnable或Callable
      * 
      * 该方法中抛出的线程是主线程，非线程池中的线程 currentThread().getName()=main
@@ -142,6 +178,7 @@ public final class ThreadPoolUtil {
         if (CollectionUtils.isNotEmpty(futureList)) {
             for (Future<V> future : futureList) {
                 try {
+                    // result.add(future.get(10, TimeUnit.SECONDS));
                     result.add(future.get());
                 } catch (Exception exception) {
                     result.add(null);
