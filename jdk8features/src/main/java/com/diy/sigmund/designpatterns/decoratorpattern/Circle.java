@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
  * @author ylm-sigmund
  * @since 2020/11/30 16:05
  */
+@Service
 public class Circle implements Shape {
 
     @Override

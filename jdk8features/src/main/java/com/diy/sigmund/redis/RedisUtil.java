@@ -1,13 +1,9 @@
 package com.diy.sigmund.redis;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,8 +74,8 @@ public class RedisUtil {
             jedisCluster.setex(key, seconds, JacksonUtil.toJson(value));
             return true;
         } catch (Exception exception) {
-            LOGGER.error("Redis setex key={}, value={}, timeout={}, timeUnit={}, exception={}", key, value, timeout,
-                timeUnit, exception);
+            LOGGER.error("Redis setex key={}, value={}, timeout={}, timeUnit={}, exception={}", key,
+                value, timeout, timeUnit, exception);
             return false;
         }
     }
@@ -205,43 +201,6 @@ public class RedisUtil {
                 args.toString(), exception);
             return null;
         }
-    }
-
-    /**
-     * 尝试获取分布式锁
-     *
-     */
-    public static boolean tryGetDistributedLock(String lockKey, String requestId, int expireTime) {
-        final List<String> args = Stream.of(requestId, String.valueOf(expireTime)).collect(Collectors.toList());
-        Object result = jedisCluster.eval(LOCK_SCRIPT, Collections.singletonList(lockKey), args);
-        return Objects.equals(SUCCESS, result);
-    }
-
-    private static final Long SUCCESS = 1L;
-    /**
-     * lua脚本：加锁，成功就设置过期时间
-     */
-    private static final String LOCK_SCRIPT =
-        "if redis.call('setnx',KEYS[1],ARGV[1]) == 1 then  return redis.call('expire',KEYS[1],ARGV[2])  else return 0 end";
-    /**
-     * lua脚本：判断锁住值是否为当前线程持有，是的话解锁，不是的话解锁失败
-     */
-    private static final String RELEASELOCK_SCRIPT =
-        "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
-
-    /**
-     * 释放分布式锁
-     *
-     * @param lockKey
-     *            锁
-     * @param requestId
-     *            请求标识
-     * @return 是否释放成功
-     */
-    public static boolean releaseDistributedLock(String lockKey, String requestId) {
-        Object result = jedisCluster.eval(RELEASELOCK_SCRIPT, Collections.singletonList(lockKey),
-            Collections.singletonList(requestId));
-        return Objects.equals(SUCCESS, result);
     }
 
     /**
